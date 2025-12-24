@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Para nós</title>
+
+    <style>
+      :root {
+        --bg: #07080f;
+        --glass: rgba(255, 255, 255, 0.07);
+        --line: rgba(255, 255, 255, 0.12);
+        --text: rgba(255, 255, 255, 0.95);
+        --muted: rgba(255, 255, 255, 0.65);
+        --accent1: #7c7cff;
+        --accent2: #ff8fd1;
+        --accent3: #5af0ff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        color: var(--text);
+        background: radial-gradient(
+            800px 600px at 20% 20%,
+            rgba(124, 124, 255, 0.35),
+            transparent 60%
+          ),
+          radial-gradient(
+            700px 500px at 80% 30%,
+            rgba(255, 143, 209, 0.25),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 700px at 50% 85%,
+            rgba(90, 240, 255, 0.22),
+            transparent 65%
+          ),
+          var(--bg);
+        animation: bgMove 16s ease-in-out infinite alternate;
+      }
+
+      @keyframes bgMove {
+        from {
+          background-position: 0% 0%;
+        }
+        to {
+          background-position: 100% 100%;
+        }
+      }
+
+      main {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .card {
+        width: min(720px, 100%);
+        background: var(--glass);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        padding: 28px;
+        backdrop-filter: blur(14px);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+      }
+
+      h1 {
+        margin: 0 0 6px;
+        font-size: 28px;
+      }
+
+      p {
+        margin: 0 0 18px;
+        color: var(--muted);
+      }
+
+      .timer {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .timer-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .box {
+        background: rgba(0, 0, 0, 0.22);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 14px;
+        text-align: center;
+      }
+
+      .num {
+        font-size: 28px;
+        font-weight: 800;
+      }
+
+      .lbl {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .action {
+        margin-top: 18px;
+        padding: 16px;
+        border-top: 1px solid var(--line);
+      }
+
+      a.btn {
+        display: inline-block;
+        padding: 14px 18px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--accent1), var(--accent2));
+        color: #000;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .footer {
+        margin-top: 16px;
+        font-size: 12px;
+        color: var(--muted);
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main>
+      <div class="card">
+        <h1>Dois momentos, uma história</h1>
+        <p>Algumas coisas sabem a hora certa de acontecer.</p>
+
+        <!-- PRIMEIRO MOMENTO -->
+        <div id="primeiroMomento">
+          <h2 id="title1">Primeiro momento chegando</h2>
+          <p id="subtitle1">Não é um pedido. É um sentimento.</p>
+          <div class="timer" id="timer1"></div>
+        </div>
+
+        <!-- SEGUNDO MOMENTO -->
+        <div id="segundoMomento">
+          <h2 id="title2">Segundo momento chegando</h2>
+          <p id="subtitle2">Algumas promessas sabem esperar.</p>
+          <div class="timer" id="timer2"></div>
+        </div>
+
+        <!-- ACTION AREA -->
+        <div class="action hidden" id="action">
+          <p id="message"></p>
+          <a id="musicLink" class="btn" target="_blank">Ouvir a música</a>
+        </div>
+
+        <div class="footer">feito com amor 🤍</div>
+      </div>
+    </main>
+
+    <script>
+      /* ===== CONFIG ===== */
+      const date18 = new Date("2025-12-23T2:00:00-03:00");
+      const date24 = new Date("2025-12-23T22:43:00-03:00");
+
+      const music18 = "https://www.youtube.com/SEU_LINK_AQUI";
+      /* ================== */
+
+      const timer1El = document.getElementById("timer1");
+      const timer2El = document.getElementById("timer2");
+      const actionEl = document.getElementById("action");
+      const msgEl = document.getElementById("message");
+      const linkEl = document.getElementById("musicLink");
+      const title1El = document.getElementById("title1");
+      const sub1El = document.getElementById("subtitle1");
+      const title2El = document.getElementById("title2");
+      const sub2El = document.getElementById("subtitle2");
+      const primeiroMomentoEl = document.getElementById("primeiroMomento");
+      const segundoMomentoEl = document.getElementById("segundoMomento");
+
+      function diffParts(ms) {
+        const s = Math.floor(ms / 1000);
+        const m = Math.floor(s / 60);
+        const h = Math.floor(m / 60);
+        const d = Math.floor(h / 24);
+        return { s: s % 60, m: m % 60, h: h % 24, d };
+      }
+
+      function renderBoxes(timerEl, parts, labels) {
+        timerEl.innerHTML = "";
+        // parts: [dias, horas, minutos, segundos]
+        let [dias, horas, minutos, segundos] = parts;
+        let showDias = dias > 0;
+        let showHoras = showDias || horas > 0;
+        let showMin = showHoras || minutos > 0;
+        // Dias e horas em cima, minutos e segundos embaixo
+        if (showDias) {
+          // Dias e horas em cima
+          const row1 = document.createElement("div");
+          row1.className = "timer-row";
+          // Dias
+          const boxDias = document.createElement("div");
+          boxDias.className = "box";
+          boxDias.innerHTML = `<div class='num'>${dias}</div><div class='lbl'>dias</div>`;
+          row1.appendChild(boxDias);
+          // Horas
+          const boxHoras = document.createElement("div");
+          boxHoras.className = "box";
+          boxHoras.innerHTML = `<div class='num'>${horas}</div><div class='lbl'>horas</div>`;
+          row1.appendChild(boxHoras);
+          timerEl.appendChild(row1);
+          // Minutos e segundos embaixo
+          const row2 = document.createElement("div");
+          row2.className = "timer-row";
+          const boxMin = document.createElement("div");
+          boxMin.className = "box";
+          boxMin.innerHTML = `<div class='num'>${minutos}</div><div class='lbl'>min</div>`;
+          row2.appendChild(boxMin);
+          const boxSeg = document.createElement("div");
+          boxSeg.className = "box";
+          boxSeg.innerHTML = `<div class='num'>${segundos}</div><div class='lbl'>seg</div>`;
+          row2.appendChild(boxSeg);
+          timerEl.appendChild(row2);
+        } else if (horas > 0) {
+          // Só horas, minutos, segundos na mesma linha
+          const row = document.createElement("div");
+          row.className = "timer-row";
+          const boxHoras = document.createElement("div");
+          boxHoras.className = "box";
+          boxHoras.innerHTML = `<div class='num'>${horas}</div><div class='lbl'>horas</div>`;
+          row.appendChild(boxHoras);
+          const boxMin = document.createElement("div");
+          boxMin.className = "box";
+          boxMin.innerHTML = `<div class='num'>${minutos}</div><div class='lbl'>min</div>`;
+          row.appendChild(boxMin);
+          const boxSeg = document.createElement("div");
+          boxSeg.className = "box";
+          boxSeg.innerHTML = `<div class='num'>${segundos}</div><div class='lbl'>seg</div>`;
+          row.appendChild(boxSeg);
+          timerEl.appendChild(row);
+        } else if (minutos > 0) {
+          // Só minutos e segundos
+          const row = document.createElement("div");
+          row.className = "timer-row";
+          const boxMin = document.createElement("div");
+          boxMin.className = "box";
+          boxMin.innerHTML = `<div class='num'>${minutos}</div><div class='lbl'>min</div>`;
+          row.appendChild(boxMin);
+          const boxSeg = document.createElement("div");
+          boxSeg.className = "box";
+          boxSeg.innerHTML = `<div class='num'>${segundos}</div><div class='lbl'>seg</div>`;
+          row.appendChild(boxSeg);
+          timerEl.appendChild(row);
+        } else {
+          // Só segundos
+          const row = document.createElement("div");
+          row.className = "timer-row";
+          const boxSeg = document.createElement("div");
+          boxSeg.className = "box";
+          boxSeg.innerHTML = `<div class='num'>${segundos}</div><div class='lbl'>seg</div>`;
+          row.appendChild(boxSeg);
+          timerEl.appendChild(row);
+        }
+      }
+
+      function renderBoxesTwoRows(timerEl, parts, labels) {
+        timerEl.innerHTML = "";
+        // Primeira linha: anos, meses, dias
+        const row1 = document.createElement("div");
+        row1.className = "timer-row";
+        for (let i = 0; i < 3; i++) {
+          const box = document.createElement("div");
+          box.className = "box";
+          box.innerHTML = `<div class='num'>${parts[i]}</div><div class='lbl'>${labels[i]}</div>`;
+          row1.appendChild(box);
+        }
+        // Segunda linha: horas, minutos, segundos
+        const row2 = document.createElement("div");
+        row2.className = "timer-row";
+        for (let i = 3; i < 6; i++) {
+          const box = document.createElement("div");
+          box.className = "box";
+          box.innerHTML = `<div class='num'>${parts[i]}</div><div class='lbl'>${labels[i]}</div>`;
+          row2.appendChild(box);
+        }
+        timerEl.appendChild(row1);
+        timerEl.appendChild(row2);
+      }
+
+      function eternalTimerFull(timerEl, start) {
+        const now = new Date();
+        let years = now.getFullYear() - start.getFullYear();
+        let months = now.getMonth() - start.getMonth();
+        let days = now.getDate() - start.getDate();
+        let hours = now.getHours() - start.getHours();
+        let minutes = now.getMinutes() - start.getMinutes();
+        let seconds = now.getSeconds() - start.getSeconds();
+        if (seconds < 0) {
+          minutes--;
+          seconds += 60;
+        }
+        if (minutes < 0) {
+          hours--;
+          minutes += 60;
+        }
+        if (hours < 0) {
+          days--;
+          hours += 24;
+        }
+        if (days < 0) {
+          months--;
+          let prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+          days += prevMonth.getDate();
+        }
+        if (months < 0) {
+          years--;
+          months += 12;
+        }
+        renderBoxesTwoRows(
+          timerEl,
+          [years, months, days, hours, minutes, seconds],
+          ["anos", "meses", "dias", "h", "min", "seg"]
+        );
+      }
+
+      function tick() {
+        const now = new Date();
+        // Estados:
+        // 1. Antes do primeiro momento: mostra os dois contadores
+        // 2. Durante o primeiro momento (1h): mostra mensagem/música, esconde contadores
+        // 3. Depois do primeiro momento + 1h: mostra só o segundo momento
+        // 4. Durante o segundo momento (1h): mensagem final
+        // 5. Depois: timer eterno
+
+        // 1. Antes do primeiro momento
+        if (now < date18) {
+          // Mostra ambos
+          primeiroMomentoEl.style.display = "";
+          segundoMomentoEl.style.display = "";
+          actionEl.classList.add("hidden");
+          // Primeiro momento
+          const diff1 = date18 - now;
+          const p1 = diffParts(diff1);
+          title1El.textContent = "Primeiro momento chegando";
+          sub1El.textContent = "Não é um pedido. É um sentimento.";
+          renderBoxes(
+            timer1El,
+            [p1.d, p1.h, p1.m, p1.s],
+            ["dias", "horas", "min", "seg"]
+          );
+          // Segundo momento
+          const diff2 = date24 - now;
+          const p2 = diffParts(diff2);
+          title2El.textContent = "Segundo momento chegando";
+          sub2El.textContent = "Algumas promessas sabem esperar.";
+          renderBoxes(
+            timer2El,
+            [p2.d, p2.h, p2.m, p2.s],
+            ["dias", "horas", "min", "seg"]
+          );
+          return;
+        }
+
+        // 2. Durante o primeiro momento (1h)
+        if (now < new Date(date18.getTime() + 3600000)) {
+          primeiroMomentoEl.style.display = "none";
+          segundoMomentoEl.style.display = "none";
+          actionEl.classList.remove("hidden");
+          msgEl.textContent = "Depois da música, tem uma surpresa.";
+          linkEl.href = music18;
+          linkEl.classList.remove("hidden");
+          return;
+        }
+
+        // 3. Entre o fim do primeiro momento + 1h e o segundo momento
+        if (now < date24) {
+          primeiroMomentoEl.style.display = "none";
+          segundoMomentoEl.style.display = "";
+          actionEl.classList.add("hidden");
+          // Segundo momento
+          const diff2 = date24 - now;
+          const p2 = diffParts(diff2);
+          title2El.textContent = "Segundo momento chegando";
+          sub2El.textContent = "Algumas promessas sabem esperar.";
+          renderBoxes(
+            timer2El,
+            [p2.d, p2.h, p2.m, p2.s],
+            ["dias", "horas", "min", "seg"]
+          );
+          return;
+        }
+
+        // 4. Durante o segundo momento (1h)
+        if (now < new Date(date24.getTime() + 3600000)) {
+          // Exibe apenas a mensagem final, sem cronômetro nem botão
+          primeiroMomentoEl.style.display = "none";
+          segundoMomentoEl.style.display = "";
+          timer2El.innerHTML = "";
+          actionEl.classList.add("hidden");
+          title2El.textContent = "Agora somos nós";
+          sub2El.textContent = "Agora estamos namorando. Eu te amo.";
+          return;
+        }
+
+        // 5. Depois: timer eterno
+        primeiroMomentoEl.style.display = "none";
+        segundoMomentoEl.style.display = "";
+        actionEl.classList.add("hidden");
+        title2El.textContent = "Estamos juntos há";
+        sub2El.textContent = "E contando…";
+        eternalTimerFull(timer2El, date24);
+      }
+
+      setInterval(tick, 1000);
+      tick();
+    </script>
+  </body>
+</html>
