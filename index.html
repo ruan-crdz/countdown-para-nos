@@ -93,13 +93,15 @@
         gap: 8px;
       }
       .timer-row {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
         gap: 12px;
       }
 
       .box {
         background: rgba(0, 0, 0, 0.22);
+        width: 100%;
         border: 1px solid var(--line);
         border-radius: 18px;
         padding: 14px;
@@ -179,7 +181,6 @@
       /* ===== CONFIG ===== */
       const date18 = new Date("2026-01-18T22:30:00-03:00");
       const date24 = new Date("2026-01-24T22:30:00-03:00");
-
       const music18 = "https://www.youtube.com/SEU_LINK_AQUI";
       /* ================== */
 
@@ -409,15 +410,13 @@
 
         // 4. Durante o segundo momento (1h)
         if (now < new Date(date24.getTime() + 3600000)) {
+          // Exibe apenas a mensagem final, sem cronômetro nem botão
           primeiroMomentoEl.style.display = "none";
           segundoMomentoEl.style.display = "";
-          actionEl.classList.remove("hidden");
-          msgEl.textContent = "Agora estamos namorando. Eu te amo.";
-          linkEl.classList.add("hidden");
-          // Zera o timer do segundo momento
-          renderBoxes(timer2El, [0, 0, 0, 0], ["", "", "", ""]);
+          timer2El.innerHTML = "";
+          actionEl.classList.add("hidden");
           title2El.textContent = "Agora somos nós";
-          sub2El.textContent = "Oficialmente.";
+          sub2El.textContent = "Oficialmente.\n\nAgora estamos namorando. Eu te amo.";
           return;
         }
 
