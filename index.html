@@ -166,14 +166,14 @@
           <a id="musicLink" class="btn" target="_blank">Ouvir a música</a>
         </div>
 
-        <div class="footer">feito com amor 🤍</div>
+        <div class="footer">feito com amor para Denga 🤍</div>
       </div>
     </main>
 
     <script>
       /* ===== CONFIG ===== */
-      const date18 = new Date("2025-12-23T2:00:00-03:00");
-      const date24 = new Date("2025-12-23T22:43:00-03:00");
+      const date18 = new Date("2026-01-18T22:30:00-03:00");
+      const date24 = new Date("2026-01-24T22:30:00-03:00");
 
       const music18 = "https://www.youtube.com/SEU_LINK_AQUI";
       /* ================== */
@@ -404,13 +404,15 @@
 
         // 4. Durante o segundo momento (1h)
         if (now < new Date(date24.getTime() + 3600000)) {
-          // Exibe apenas a mensagem final, sem cronômetro nem botão
           primeiroMomentoEl.style.display = "none";
           segundoMomentoEl.style.display = "";
-          timer2El.innerHTML = "";
-          actionEl.classList.add("hidden");
+          actionEl.classList.remove("hidden");
+          msgEl.textContent = "Agora estamos namorando. Eu te amo.";
+          linkEl.classList.add("hidden");
+          // Zera o timer do segundo momento
+          renderBoxes(timer2El, [0, 0, 0, 0], ["", "", "", ""]);
           title2El.textContent = "Agora somos nós";
-          sub2El.textContent = "Agora estamos namorando. Eu te amo.";
+          sub2El.textContent = "Oficialmente.";
           return;
         }
 
