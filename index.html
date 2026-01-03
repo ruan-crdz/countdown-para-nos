@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    
+
     <link rel="apple-touch-icon" sizes="180x180" href="icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="icon.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="icon.png" />
@@ -156,7 +156,7 @@
         <!-- PRIMEIRO MOMENTO -->
         <div id="primeiroMomento">
           <h2 id="title1">Primeiro momento chegando</h2>
-          <p id="subtitle1">Não é um pedido. É um sentimento.</p>
+          <p id="subtitle1">Algo especial está por vir.</p>
           <div class="timer" id="timer1"></div>
         </div>
 
@@ -360,7 +360,7 @@
           const diff1 = date18 - now;
           const p1 = diffParts(diff1);
           title1El.textContent = "Primeiro momento chegando";
-          sub1El.textContent = "Não é um pedido. É um sentimento.";
+          sub1El.textContent = "Algo especial está por vir.";
           renderBoxes(
             timer1El,
             [p1.d, p1.h, p1.m, p1.s],
@@ -416,7 +416,8 @@
           timer2El.innerHTML = "";
           actionEl.classList.add("hidden");
           title2El.textContent = "Agora somos nós";
-          sub2El.textContent = "Oficialmente.\n\nAgora estamos namorando. Eu te amo.";
+          sub2El.textContent =
+            "Oficialmente.\n\nAgora estamos namorando. Eu te amo.";
           return;
         }
 
