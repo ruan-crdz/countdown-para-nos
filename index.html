@@ -144,10 +144,30 @@
         color: var(--muted);
         text-align: center;
       }
+
+      .wallpaper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+
+      .wallpaper.active {
+        opacity: 1;
+      }
     </style>
   </head>
 
   <body>
+    <div id="wallpaper18" class="wallpaper"></div>
+    <div id="wallpaper24" class="wallpaper"></div>
     <main>
       <div class="card">
         <h1>Dois momentos, uma história</h1>
@@ -170,7 +190,9 @@
         <!-- ACTION AREA -->
         <div class="action hidden" id="action">
           <p id="message"></p>
-          <a id="musicLink" class="btn" target="_blank">Ouvir a música</a>
+          <div id="videoContainer" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 16px;">
+            <iframe id="musicIframe" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; border-radius: 16px;" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          </div>
         </div>
 
         <div class="footer">feito com amor para Denga 🤍</div>
@@ -181,20 +203,45 @@
       /* ===== CONFIG ===== */
       const date18 = new Date("2026-01-18T22:30:00-03:00");
       const date24 = new Date("2026-01-24T22:30:00-03:00");
-      const music18 = "https://www.youtube.com/SEU_LINK_AQUI";
+      const music18 = "https://www.youtube.com/embed/ju8QJ6Ykoaw?si=fjieswvNy9GZNmJH";
       /* ================== */
 
       const timer1El = document.getElementById("timer1");
       const timer2El = document.getElementById("timer2");
       const actionEl = document.getElementById("action");
       const msgEl = document.getElementById("message");
-      const linkEl = document.getElementById("musicLink");
+      const iframeEl = document.getElementById("musicIframe");
       const title1El = document.getElementById("title1");
       const sub1El = document.getElementById("subtitle1");
       const title2El = document.getElementById("title2");
       const sub2El = document.getElementById("subtitle2");
       const primeiroMomentoEl = document.getElementById("primeiroMomento");
       const segundoMomentoEl = document.getElementById("segundoMomento");
+      const wallpaper18El = document.getElementById("wallpaper18");
+      const wallpaper24El = document.getElementById("wallpaper24");
+
+      // Configurar wallpapers
+      wallpaper18El.style.backgroundImage = "url('wallpaper-18.png')";
+      wallpaper24El.style.backgroundImage = "url('wallpaper-24.png')";
+
+      function manageWallpaper(now) {
+        const day = now.getDate();
+        const month = now.getMonth() + 1; // Janeiro = 1
+        const year = now.getFullYear();
+        
+        // Remove wallpapers ativos
+        wallpaper18El.classList.remove('active');
+        wallpaper24El.classList.remove('active');
+        
+        // Durante todo o dia 18/01/2026
+        if (year === 2026 && month === 1 && day === 18) {
+          wallpaper18El.classList.add('active');
+        }
+        // Durante todo o dia 24/01/2026
+        else if (year === 2026 && month === 1 && day === 24) {
+          wallpaper24El.classList.add('active');
+        }
+      }
 
       function diffParts(ms) {
         const s = Math.floor(ms / 1000);
@@ -343,6 +390,10 @@
 
       function tick() {
         const now = new Date();
+        
+        // Gerenciar wallpapers
+        manageWallpaper(now);
+        
         // Estados:
         // 1. Antes do primeiro momento: mostra os dois contadores
         // 2. Durante o primeiro momento (1h): mostra mensagem/música, esconde contadores
@@ -379,18 +430,17 @@
           return;
         }
 
-        // 2. Durante o primeiro momento (1h)
-        if (now < new Date(date18.getTime() + 3600000)) {
+        // 2. Durante o primeiro momento (24h)
+        if (now < new Date(date18.getTime() + 86400000)) {
           primeiroMomentoEl.style.display = "none";
           segundoMomentoEl.style.display = "none";
           actionEl.classList.remove("hidden");
           msgEl.textContent = "Depois da música, tem uma surpresa.";
-          linkEl.href = music18;
-          linkEl.classList.remove("hidden");
+          iframeEl.src = music18;
           return;
         }
 
-        // 3. Entre o fim do primeiro momento + 1h e o segundo momento
+        // 3. Entre o fim do primeiro momento + 24h e o segundo momento
         if (now < date24) {
           primeiroMomentoEl.style.display = "none";
           segundoMomentoEl.style.display = "";
